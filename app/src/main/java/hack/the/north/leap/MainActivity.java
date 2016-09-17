@@ -19,6 +19,7 @@ package hack.the.north.leap;
 
         import android.app.Activity;
         import android.os.Bundle;
+        import android.os.Handler;
         import android.util.Log;
         import android.view.MotionEvent;
         import android.view.View;
@@ -26,6 +27,7 @@ package hack.the.north.leap;
         import android.view.WindowManager;
         import android.view.View.OnTouchListener;
         import android.view.SurfaceView;
+        import android.widget.ImageView;
 
 public class MainActivity extends Activity implements OnTouchListener, CvCameraViewListener2 {
     private static final String  TAG              = "OCVSample::Activity";
@@ -40,6 +42,31 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private Scalar               CONTOUR_COLOR;
 
     private CameraBridgeViewBase mOpenCvCameraView;
+    private ImageView mImageView;
+    private void drawDirection(int direction){
+        mImageView = (ImageView) findViewById(R.id.imageDirection);
+        switch (direction){
+            case  0:
+                mImageView.setImageResource(R.drawable.up_arrow);
+                break;
+            case  1:
+                mImageView.setImageResource(R.drawable.right_arrow);
+                break;
+            case  2:
+                mImageView.setImageResource(R.drawable.down_arrow);
+                break;
+            case  3:
+                mImageView.setImageResource(R.drawable.left_arrow);
+                break;
+        }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mImageView.setImageBitmap(null);
+            }
+        }, 800);
+
+    }
 
     private BaseLoaderCallback  mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
