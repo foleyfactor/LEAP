@@ -274,6 +274,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 Point hullCenter = getCenterPoint(hullPoints);
                 Point contourCenter = getCenterPoint(contourPoints);
 
+                Imgproc.drawContours(mRgba, contours, -1, CONTOUR_COLOR, 5);
+                Imgproc.circle(mRgba, contourCenter, 10, CONTOUR_COLOR, -1);
+
                 Imgproc.drawContours(mRgba, hulls, -1, HULL_COLOR, 5);
                 Imgproc.circle(mRgba, hullCenter, 10, HULL_COLOR, -1);
                 double hullArea = Imgproc.contourArea(hullMat);
@@ -289,10 +292,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 drawDirection(Integer.MAX_VALUE);
             }
 
-                Imgproc.drawContours(mRgba, contours, -1, CONTOUR_COLOR, 5);
-                Imgproc.circle(mRgba, contourCenter, 10, CONTOUR_COLOR, -1);
-
-            }
             Mat colorLabel = mRgba.submat(4, 68, 4, 68);
             colorLabel.setTo(mBlobColorRgba);
 
