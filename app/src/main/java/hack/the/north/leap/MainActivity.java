@@ -26,7 +26,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -47,41 +46,32 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private Size SPECTRUM_SIZE;
     private Scalar CONTOUR_COLOR, HULL_COLOR;
 
-    private int width, height;
-
-
     private CameraBridgeViewBase mOpenCvCameraView;
     private ImageView mImageView;
-    private int directionOldImageD=Integer.MAX_VALUE;
-    private int directionOldImageF= Integer.MAX_VALUE;
+    private int directionOldImage=Integer.MAX_VALUE;
     private void drawDirection(int direction){
-        if ( (direction<=3&&direction>=0&&direction!=directionOldImageD)||(direction<=5&&direction>=4&&direction!=directionOldImageF) ) {
+        if (directionOldImage!=direction) {
+            directionOldImage = direction;
             mImageView = (ImageView) findViewById(R.id.imageDirection);
             final Drawable draw;
             switch (direction) {
                 case 0:
                     draw = getDrawable(R.drawable.up_arrow);
-                    directionOldImageD=direction;
                     break;
                 case 1:
                     draw = getDrawable(R.drawable.right_arrow);
-                    directionOldImageD=direction;
                     break;
                 case 2:
                     draw = getDrawable(R.drawable.down_arrow);
-                    directionOldImageD=direction;
                     break;
                 case 3:
                     draw = getDrawable(R.drawable.left_arrow);
-                    directionOldImageD=direction;
                     break;
                 case 4:
                     draw = getDrawable(R.drawable.fist);
-                    directionOldImageF=direction;
                     break;
                 case 5:
                     draw = getDrawable(R.drawable.unfist);
-                    directionOldImageF=direction;
                     break;
                 default:
                     draw = null;
@@ -103,27 +93,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             });
         }
 
-    }
-    private void checkHandDirection(Point location){
-        int cX = (int)location.x;
-        int cY = (int)location.y;
-
-        int rightXQuart = width/4;
-        int leftXQuart = (3*width)/4;
-        int topYQuart = height/4;
-        int bottomYQuart = (3*height)/4;
-
-        if (cX < rightXQuart){//right
-            drawDirection(1);
-        }else if (cX > leftXQuart){//left
-            drawDirection(3);
-        }else if (cY < topYQuart){//up
-            drawDirection(0);
-        }else if (cY > bottomYQuart){//down
-            drawDirection(2);
-        }else{
-            drawDirection(-1);
-        }
     }
 
     private BaseLoaderCallback  mLoaderCallback = new BaseLoaderCallback(this) {
@@ -157,19 +126,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-
         setContentView(R.layout.activity_main);
-
-        //gets width and height
-        Display display = getWindowManager().getDefaultDisplay();
-
-        android.graphics.Point size = new android.graphics.Point();
-        //getWindowManager().getDefaultDisplay().getSize(size);
-        width = 1920;
-        height = 1080;
-
-        Log.e(TAG, "Screen video resolution: Width: "+width+" height: "+height);
-
 
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.HelloOpenCvView);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
@@ -316,7 +273,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
                 Point hullCenter = getCenterPoint(hullPoints);
                 Point contourCenter = getCenterPoint(contourPoints);
-                checkHandDirection(contourCenter);
 
                 Imgproc.drawContours(mRgba, contours, -1, CONTOUR_COLOR, 5);
                 Imgproc.circle(mRgba, contourCenter, 10, CONTOUR_COLOR, -1);
