@@ -244,19 +244,19 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 MatOfPoint hullMat = new MatOfPoint();
                 hullMat.fromList(hullPoints);
 
-                List<MatOfPoint> hull = new ArrayList<>();
-                hull.add(hullMat);
+                List<MatOfPoint> hulls = new ArrayList<>();
+                hulls.add(hullMat);
 
-                Imgproc.drawContours(mRgba, hull, -1, HULL_COLOR, 5);
+                Point hullCenter = getCenterPoint(hullPoints);
+                Point contourCenter = getCenterPoint(contourPoints);
 
-                Imgproc.contourArea(hullMat);
+                Imgproc.drawContours(mRgba, hulls, -1, HULL_COLOR, 5);
+                Imgproc.circle(mRgba, hullCenter, 10, HULL_COLOR, -1);
+
+                Imgproc.drawContours(mRgba, contours, -1, CONTOUR_COLOR, 5);
+                Imgproc.circle(mRgba, contourCenter, 10, CONTOUR_COLOR, -1);
+
             }
-
-
-
-            Imgproc.drawContours(mRgba, contours, -1, CONTOUR_COLOR, 5);
-            Imgproc.circle(mRgba, new Point(10, 10), 5, CONTOUR_COLOR, -1);
-
             Mat colorLabel = mRgba.submat(4, 68, 4, 68);
             colorLabel.setTo(mBlobColorRgba);
 
@@ -268,6 +268,22 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         Core.flip(mRgba, mRgba, 1);
 
         return mRgba;
+    }
+
+    private Point getCenterPoint(List<Point> points) {
+        double sumX = 0;
+        double sumY = 0;
+
+        for (int i=0; i < points.size(); i++) {
+            Point point = points.get(i);
+            sumX += point.x;
+            sumY += point.y;
+        }
+
+        double cX = sumX / points.size();
+        double cY = sumY / points.size();
+
+        return new Point(cX, cY);
     }
 
     private Scalar converScalarHsv2Rgba(Scalar hsvColor) {
