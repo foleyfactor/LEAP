@@ -11,6 +11,7 @@ import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfInt;
+import org.opencv.core.MatOfInt4;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
@@ -211,8 +212,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             List<MatOfPoint> contours = mDetector.getContours();
             Log.e(TAG, "Contours count: " + contours.size());
 
-
             if (!contours.isEmpty()) {
+
                 MatOfInt hullIndex = new MatOfInt();
 
                 MatOfPoint largest;
@@ -249,10 +250,16 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
                 Imgproc.drawContours(mRgba, hull, -1, HULL_COLOR, 5);
 
-                Imgproc.contourArea(hullMat);
+                double hullArea = Imgproc.contourArea(hullMat);
+                double contourArea = Imgproc.contourArea(largest);
+                double solidity = contourArea/hullArea;
+
+                if (solidity > 0.77f) {
+                    Log.e(TAG, "Clenched!!!!!");
+                } else {
+                    Log.e(TAG, "Unclenched!!!!");
+                }
             }
-
-
 
             Imgproc.drawContours(mRgba, contours, -1, CONTOUR_COLOR, 5);
             Imgproc.circle(mRgba, new Point(10, 10), 5, CONTOUR_COLOR, -1);

@@ -102,6 +102,7 @@ public class ColorBlobDetector {
                 mContours.add(contour);
             }
         }
+        Log.e(TAG, "YOLO");
     }
 
     public List<MatOfPoint> getContours() {
