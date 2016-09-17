@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "737242132070",
+    "firebase_url": "https://leap-5edd0.firebaseio.com",
+    "project_id": "leap-5edd0",
+    "storage_bucket": "leap-5edd0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:737242132070:android:c78eda38c30f7e5d",
+        "android_client_info": {
+          "package_name": "hack.the.north.leap"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "737242132070-q83l5l3knkjmmhoed34mtfas5uvsfmhr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApQZxKcrOJ2L4Tw-FtXADaYO5i9EM47MM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
