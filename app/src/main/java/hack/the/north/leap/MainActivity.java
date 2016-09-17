@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.net.Uri;
+import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,22 +31,57 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
     private static final String TAG = "Main";
     private CameraBridgeViewBase mOpenCvCameraView;
+    private ImageView mImageView;
     /**
      * ATTENTION: This was auto-generated to implement the App Indexing API.
      * See https://g.co/AppIndexing/AndroidStudio for more information.
      */
     private GoogleApiClient client;
+    private void drawDirection(int direction){
+        mImageView = (ImageView) findViewById(R.id.imageDirection);
+        switch (direction){
+            case  0:
+                mImageView.setImageResource(R.drawable.up_arrow);
+                break;
+            case  1:
+                mImageView.setImageResource(R.drawable.right_arrow);
+                break;
+            case  2:
+                mImageView.setImageResource(R.drawable.down_arrow);
+                break;
+            case  3:
+                mImageView.setImageResource(R.drawable.left_arrow);
+                break;
+        }
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mImageView.setImageBitmap(null);
+            }
+        }, 800);
+
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        /*
+        WindowManager.LayoutParams params = getWindow().getAttributes();
+        params.x = -20;
+        params.height = 1440;
+        params.width = 2560;
+        params.y = -10;
 
+        this.getWindow().setAttributes(params);
+        */
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         setContentView(R.layout.activity_main);
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.HelloOpenCvView);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
+
 
         int rc = ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
         if (rc == PackageManager.PERMISSION_GRANTED) {
@@ -62,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         // ATTENTION: This was auto-generated to implement the App Indexing API.
         // See https://g.co/AppIndexing/AndroidStudio for more information.
         client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+        drawDirection(2);
     }
 
     private void requestCameraPermission() {
