@@ -1,5 +1,6 @@
 package hack.the.north.leap;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.opencv.android.BaseLoaderCallback;
@@ -41,7 +42,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private ColorBlobDetector mDetector;
     private Mat mSpectrum;
     private Size SPECTRUM_SIZE;
-    private Scalar CONTOUR_COLOR;
+    private Scalar CONTOUR_COLOR, HULL_COLOR;
 
     private CameraBridgeViewBase mOpenCvCameraView;
     private ImageView mImageView;
@@ -145,6 +146,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         mBlobColorHsv = new Scalar(255);
         SPECTRUM_SIZE = new Size(200, 64);
         CONTOUR_COLOR = new Scalar(255,0,0,255);
+        HULL_COLOR = new Scalar(0,255,0,255);
     }
 
     public void onCameraViewStopped() {
@@ -209,12 +211,48 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             List<MatOfPoint> contours = mDetector.getContours();
             Log.e(TAG, "Contours count: " + contours.size());
 
-            for (int i=0; i < contours.size(); i++) {
-                //TODO
+
+            if (!contours.isEmpty()) {
+                MatOfInt hullIndex = new MatOfInt();
+
+                MatOfPoint largest;
+
+                if (contours.size() == 1) {
+                    largest = contours.get(0);
+                } else {
+                    double max = Imgproc.contourArea(contours.get(0));
+                    int index = 0;
+                    for (int i = 1; i < contours.size(); i++) {
+                        double val = Imgproc.contourArea(contours.get(i));
+                        if (val > max) {
+                            max = val;
+                            index = i;
+                        }
+                    }
+                    largest = contours.get(index);
+                }
+                Imgproc.convexHull(largest, hullIndex);
+                List<Integer> hullList = hullIndex.toList();
+
+                List<Point> contourPoints = largest.toList();
+                List<Point> hullPoints = new ArrayList<>();
+
+                for (int i : hullList) {
+                    hullPoints.add(contourPoints.get(i));
+                }
+
+                MatOfPoint hullMat = new MatOfPoint();
+                hullMat.fromList(hullPoints);
+
+                List<MatOfPoint> hull = new ArrayList<>();
+                hull.add(hullMat);
+
+                Imgproc.drawContours(mRgba, hull, -1, HULL_COLOR, 5);
+
+                Imgproc.contourArea(hullMat);
             }
 
-            MatOfInt hull = new MatOfInt();
-            Imgproc.convexHull(contours, hull);
+
 
             Imgproc.drawContours(mRgba, contours, -1, CONTOUR_COLOR, 5);
             Imgproc.circle(mRgba, new Point(10, 10), 5, CONTOUR_COLOR, -1);

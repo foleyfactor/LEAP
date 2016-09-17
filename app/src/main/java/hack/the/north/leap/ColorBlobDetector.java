@@ -1,5 +1,7 @@
 package hack.the.north.leap;
 
+import android.util.Log;
+
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -18,10 +20,11 @@ import java.util.List;
 public class ColorBlobDetector {
     private Scalar mLowerBound = new Scalar(0);
     private Scalar mUpperBound = new Scalar(0);
-    private static double mMinContourArea = 0.5;
-    private Scalar mColorRadius = new Scalar(10,67,67,0);
+    private static double mMinContourArea = 2000;
+    private Scalar mColorRadius = new Scalar(10,67,50,0);
     private Mat mSpectrum = new Mat();
     private List<MatOfPoint> mContours = new ArrayList<>();
+    private static final String TAG = "CBlob";
 
     Mat mPyrDownMat = new Mat();
     Mat mHsvMat = new Mat();
@@ -93,7 +96,8 @@ public class ColorBlobDetector {
         each = contours.iterator();
         while (each.hasNext()) {
             MatOfPoint contour = each.next();
-            if (Imgproc.contourArea(contour) > mMinContourArea*maxArea) {
+            if (Imgproc.contourArea(contour) > mMinContourArea) {
+                Log.e(TAG, Imgproc.contourArea(contour)+ " " + mMinContourArea);
                 Core.multiply(contour, new Scalar(4,4), contour);
                 mContours.add(contour);
             }
