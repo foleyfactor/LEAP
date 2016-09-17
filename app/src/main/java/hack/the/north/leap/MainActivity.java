@@ -35,6 +35,9 @@ import android.view.View.OnTouchListener;
 import android.view.SurfaceView;
 import android.widget.ImageView;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 public class MainActivity extends Activity implements OnTouchListener, CvCameraViewListener2 {
     private static final String  TAG              = "OCVSample::Activity";
 
@@ -46,6 +49,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private Mat mSpectrum;
     private Size SPECTRUM_SIZE;
     private Scalar CONTOUR_COLOR, HULL_COLOR;
+
+    private Point lastCenter;
+    private boolean lastFist;
 
     private int width, height;
     private CameraBridgeViewBase mOpenCvCameraView;
@@ -186,6 +192,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         display.getSize(size);
         width = 1920;
         height = 1080;
+
+        lastFist = false;
 
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.HelloOpenCvView);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
@@ -343,12 +351,30 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 double contourArea = Imgproc.contourArea(largest);
                 double solidity = contourArea/hullArea;
 
+                if (lastCenter != null) {
+                    double deltaX = contourCenter.x - lastCenter.x;
+                    double deltaY = contourCenter.y - lastCenter.y;
+
+                    setDelta(-deltaX, deltaY);
+                }
+
+                lastCenter = hullCenter;
+
                 if (solidity > 0.77f) {
                     drawFist(0);
+                    if (! lastFist) {
+                        setFist(true);
+                        lastFist = true;
+                    }
                 } else {
                     drawFist(1);
+                    if (lastFist) {
+                        setFist(false);
+                        lastFist = false;
+                    }
                 }
             } else {
+                drawDirection(4);
                 drawFist(Integer.MAX_VALUE);
             }
 
@@ -379,6 +405,19 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         double cY = sumY / points.size();
 
         return new Point(cX, cY);
+    }
+
+    public void setFist(boolean b) {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("values/fist");
+        ref.setValue(b);
+    }
+
+    public void setDelta(double x, double y) {
+        DatabaseReference refx = FirebaseDatabase.getInstance().getReference("values/deltaX");
+        DatabaseReference refy = FirebaseDatabase.getInstance().getReference("values/deltaY");
+
+        refx.setValue(x);
+        refy.setValue(y);
     }
 
     private Scalar converScalarHsv2Rgba(Scalar hsvColor) {
