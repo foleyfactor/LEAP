@@ -26,6 +26,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -46,11 +47,14 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private Size SPECTRUM_SIZE;
     private Scalar CONTOUR_COLOR, HULL_COLOR;
 
+    private int width, height;
     private CameraBridgeViewBase mOpenCvCameraView;
     private ImageView mImageView;
+    private ImageView nImageView;
     private int directionOldImage=Integer.MAX_VALUE;
-    private void drawDirection(int direction){
-        if (directionOldImage!=direction) {
+    private int fistOldImage=Integer.MAX_VALUE;
+    private void drawDirection(int direction) {
+        if (directionOldImage != direction) {
             directionOldImage = direction;
             mImageView = (ImageView) findViewById(R.id.imageDirection);
             final Drawable draw;
@@ -68,10 +72,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     draw = getDrawable(R.drawable.left_arrow);
                     break;
                 case 4:
-                    draw = getDrawable(R.drawable.fist);
-                    break;
-                case 5:
-                    draw = getDrawable(R.drawable.unfist);
+                    draw = null;
                     break;
                 default:
                     draw = null;
@@ -92,7 +93,60 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 }
             });
         }
+    }
+    private void drawFist(int direction){
+        if (fistOldImage!=direction) {
+            fistOldImage = direction;
+            nImageView = (ImageView) findViewById(R.id.imageFist);
+            final Drawable draw;
+            switch (direction) {
+                case 0:
+                    draw = getDrawable(R.drawable.fist);
+                    break;
+                case 1:
+                    draw = getDrawable(R.drawable.unfist);
+                    break;
+                default:
+                    draw = null;
+                    break;
+            }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    nImageView.setBackground(draw);
+                    /*
+                    try {
+                        Thread.sleep(800);
+                    } catch (Exception e) {
+                        //kek
+                    }
+                    nImageView.setImageBitmap(null);
+                    */
+                }
+            });
+        }
 
+    }
+    private void checkHandDirection(Point location){
+        int cX = (int)location.x;
+        int cY = (int)location.y;
+
+        int rightXQuart = width/4;
+        int leftXQuart = (3*width)/4;
+        int topYQuart = height/4;
+        int bottomYQuart = (3*height)/4;
+
+        if (cX < rightXQuart){//right
+            drawDirection(1);
+        }else if (cX > leftXQuart){//left
+            drawDirection(3);
+        }else if (cY < topYQuart){//up
+            drawDirection(0);
+        }else if (cY > bottomYQuart){//down
+            drawDirection(2);
+        }else{
+            drawDirection(4);
+        }
     }
 
     private BaseLoaderCallback  mLoaderCallback = new BaseLoaderCallback(this) {
@@ -127,6 +181,11 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         setContentView(R.layout.activity_main);
+        Display display = getWindowManager().getDefaultDisplay();
+        android.graphics.Point size = new android.graphics.Point();
+        display.getSize(size);
+        width = 1920;
+        height = 1080;
 
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.HelloOpenCvView);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
@@ -273,6 +332,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
                 Point hullCenter = getCenterPoint(hullPoints);
                 Point contourCenter = getCenterPoint(contourPoints);
+                checkHandDirection(contourCenter);
 
                 Imgproc.drawContours(mRgba, contours, -1, CONTOUR_COLOR, 5);
                 Imgproc.circle(mRgba, contourCenter, 10, CONTOUR_COLOR, -1);
@@ -284,12 +344,12 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 double solidity = contourArea/hullArea;
 
                 if (solidity > 0.77f) {
-                    drawDirection(4);
+                    drawFist(0);
                 } else {
-                    drawDirection(5);
+                    drawFist(1);
                 }
             } else {
-                drawDirection(Integer.MAX_VALUE);
+                drawFist(Integer.MAX_VALUE);
             }
 
             Mat colorLabel = mRgba.submat(4, 68, 4, 68);
