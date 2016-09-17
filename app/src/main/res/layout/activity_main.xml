@@ -5,9 +5,12 @@
     android:layout_width="fill_parent"
     android:layout_height="match_parent"
     xmlns:opencv="http://schemas.android.com/apk/res-auto"
+<<<<<<< HEAD
+=======
 
 
 
+>>>>>>> origin/master
     tools:context="hack.the.north.leap.MainActivity">
 
     <org.opencv.android.JavaCameraView
