@@ -9,7 +9,9 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfInt;
 import org.opencv.core.MatOfPoint;
+import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.core.Size;
@@ -206,7 +208,16 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             mDetector.process(mRgba);
             List<MatOfPoint> contours = mDetector.getContours();
             Log.e(TAG, "Contours count: " + contours.size());
-            Imgproc.drawContours(mRgba, contours, -1, CONTOUR_COLOR);
+
+            for (int i=0; i < contours.size(); i++) {
+                //TODO
+            }
+
+            MatOfInt hull = new MatOfInt();
+            Imgproc.convexHull(contours, hull);
+
+            Imgproc.drawContours(mRgba, contours, -1, CONTOUR_COLOR, 5);
+            Imgproc.circle(mRgba, new Point(10, 10), 5, CONTOUR_COLOR, -1);
 
             Mat colorLabel = mRgba.submat(4, 68, 4, 68);
             colorLabel.setTo(mBlobColorRgba);

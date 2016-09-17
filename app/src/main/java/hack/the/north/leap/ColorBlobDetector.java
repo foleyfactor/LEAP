@@ -18,8 +18,8 @@ import java.util.List;
 public class ColorBlobDetector {
     private Scalar mLowerBound = new Scalar(0);
     private Scalar mUpperBound = new Scalar(0);
-    private static double mMinContourArea = 0.1;
-    private Scalar mColorRadius = new Scalar(25,50,50,0);
+    private static double mMinContourArea = 0.5;
+    private Scalar mColorRadius = new Scalar(10,67,67,0);
     private Mat mSpectrum = new Mat();
     private List<MatOfPoint> mContours = new ArrayList<>();
 
