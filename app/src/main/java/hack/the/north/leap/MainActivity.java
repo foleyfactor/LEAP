@@ -1,50 +1,50 @@
 package hack.the.north.leap;
 
-        import java.util.List;
+import java.util.List;
 
-        import org.opencv.android.BaseLoaderCallback;
-        import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
-        import org.opencv.android.LoaderCallbackInterface;
-        import org.opencv.android.OpenCVLoader;
-        import org.opencv.core.Core;
-        import org.opencv.core.CvType;
-        import org.opencv.core.Mat;
-        import org.opencv.core.MatOfPoint;
-        import org.opencv.core.Rect;
-        import org.opencv.core.Scalar;
-        import org.opencv.core.Size;
-        import org.opencv.android.CameraBridgeViewBase;
-        import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
-        import org.opencv.imgproc.Imgproc;
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.CameraBridgeViewBase.CvCameraViewFrame;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfPoint;
+import org.opencv.core.Rect;
+import org.opencv.core.Scalar;
+import org.opencv.core.Size;
+import org.opencv.android.CameraBridgeViewBase;
+import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
+import org.opencv.imgproc.Imgproc;
 
-        import android.app.Activity;
-        import android.os.Bundle;
-        import android.os.Handler;
-        import android.util.Log;
-        import android.view.MotionEvent;
-        import android.view.View;
-        import android.view.Window;
-        import android.view.WindowManager;
-        import android.view.View.OnTouchListener;
-        import android.view.SurfaceView;
-        import android.widget.ImageView;
+import android.app.Activity;
+import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.view.View.OnTouchListener;
+import android.view.SurfaceView;
+import android.widget.ImageView;
 
 public class MainActivity extends Activity implements OnTouchListener, CvCameraViewListener2 {
     private static final String  TAG              = "OCVSample::Activity";
 
-    private boolean              mIsColorSelected = false;
-    private Mat                  mRgba;
-    private Scalar               mBlobColorRgba;
-    private Scalar               mBlobColorHsv;
-    private ColorBlobDetector    mDetector;
-    private Mat                  mSpectrum;
-    private Size                 SPECTRUM_SIZE;
-    private Scalar               CONTOUR_COLOR;
+    private boolean mIsColorSelected = false;
+    private Mat mRgba;
+    private Scalar mBlobColorRgba;
+    private Scalar mBlobColorHsv;
+    private ColorBlobDetector mDetector;
+    private Mat mSpectrum;
+    private Size SPECTRUM_SIZE;
+    private Scalar CONTOUR_COLOR;
 
     private CameraBridgeViewBase mOpenCvCameraView;
     private ImageView mImageView;
     private void drawDirection(int direction){
-        mImageView = (ImageView) findViewById(R.id.imageDirection);
+        mImageView = null;//(ImageView) findViewById(R.id.imageDirection);
         switch (direction){
             case  0:
                 mImageView.setImageResource(R.drawable.up_arrow);
