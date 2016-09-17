@@ -26,6 +26,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
@@ -45,6 +46,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private Mat mSpectrum;
     private Size SPECTRUM_SIZE;
     private Scalar CONTOUR_COLOR, HULL_COLOR;
+
+    private int width, height;
+
 
     private CameraBridgeViewBase mOpenCvCameraView;
     private ImageView mImageView;
@@ -127,6 +131,14 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         setContentView(R.layout.activity_main);
+
+        //gets width and height
+        Display display = getWindowManager().getDefaultDisplay();
+
+        android.graphics.Point size = new android.graphics.Point();
+        display.getSize(size);
+        width = size.x;
+        height = size.y;
 
         mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.HelloOpenCvView);
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
