@@ -105,6 +105,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
         mOpenCvCameraView.setCvCameraViewListener(this);
         mOpenCvCameraView.setCameraIndex(1);
+
     }
 
     @Override
@@ -213,6 +214,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             Mat spectrumLabel = mRgba.submat(4, 4 + mSpectrum.rows(), 70, 70 + mSpectrum.cols());
             mSpectrum.copyTo(spectrumLabel);
         }
+
+
+        Core.flip(mRgba, mRgba, 1);
 
         return mRgba;
     }
