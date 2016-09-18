@@ -1,9 +1,12 @@
+#!/usr/bin/env python3
+
 import pyrebase
 import pyautogui
 import time
 from math import sqrt, pi
 
-PERCENTAGE_FOR_MOVEMENT = 0.7 #percentage of radius of the hull that needs to be moved for a "swipe" to be registered
+DELTA_THRESHOLD_COEFF = 2
+DELTA_THRESHOLD_Y_INT = 62.3
 DOUBLE_COMMAND_TIME = 1.0 # in seconds
 COMMAND_TIME = 0.5 # in seconds
 
@@ -24,7 +27,7 @@ class LEAPCommand:
 		self.lastCommandTime = 0
 		self.swipingX = False
 		self.swipingY = False
-		self.DELTA_THRESHOLD = 500
+		self.deltaThreshold = 500
 
 	def start(self):
 		self.stream = self.db.stream(self.streamHandler)
@@ -32,45 +35,45 @@ class LEAPCommand:
 	def command(self, cmd):
 		pyautogui.hotkey(*cmd.split("-"))
 		print(cmd)
-		self.lastCommand = cmd
+		self.lastCommand = None
 		self.lastCommandTime = time.time()
 
 	def updateDelta(self, hull):
 		#assume that for our case, the hull could be approximated
 		#to a circle
 		radius = sqrt(hull/pi)
-		self.DELTA_THRESHOLD = PERCENTAGE_FOR_MOVEMENT*radius
-
+		self.deltaThreshold = DELTA_THRESHOLD_COEFF * radius - DELTA_THRESHOLD_Y_INT
+		print("\t\t\t\t\t", radius, self.deltaThreshold)
 
 	def streamHandler(self, post):
-
 		event = post["event"]
 		key = post["path"]
 		value = post["data"]
 
 		if event == "put":
-			if (time.time() - self.lastCommandTime) < COMMAND_TIME:
-				if 				
+			if self.lastCommand == "fist" and \
+				key == "/values/fist" and value and \
+				(time.time() - self.lastCommandTime) < DOUBLE_COMMAND_TIME:
+					self.command("ctrl-t")
 
-			else:
+			elif (time.time() - self.lastCommandTime) > COMMAND_TIME: #TODO: Check for double commands
 				print(self.lastCommandTime, time.time())
 				if key == "/":
 					print("INFO: Initial data:", value)
 
 				print(key+":\t", value, end="\t")
 
-				if key == "/values/fist":
-					if value:
-						self.command("ctrl-t")
+				if key == "/values/fist" and value:
+					self.lastCommand = "fist"
 
 				elif key == "/values/deltaX":
 					if self.swipingX:
 						self.swipingX = False
 					else:
 						self.swipingX = True
-						if value >  self.DELTA_THRESHOLD:
+						if value >  self.deltaThreshold:
 							self.command("ctrl-tab")
-						elif value < -self.DELTA_THRESHOLD:
+						elif value < -self.deltaThreshold:
 							self.command("ctrl-shift-tab")
 
 				elif key == "/values/deltaY":
@@ -78,14 +81,13 @@ class LEAPCommand:
 						self.swipingY = False
 					else:
 						self.swipingY = True
-						if value >  self.DELTA_THRESHOLD:
+						if value >  self.deltaThreshold:
 							self.command("ctrl-w")
-						elif value < -self.DELTA_THRESHOLD:
+						elif value < -self.deltaThreshold:
 							self.command("ctrl-w")
 
 				elif key == '/values/hullArea':
 					self.updateDelta(value)
-
 
 		else:
 			print("WARN:", "Other event:", event)
