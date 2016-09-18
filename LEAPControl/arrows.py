@@ -49,7 +49,7 @@ class LEAPCommand:
 					print("INFO: Initial data:", value)
 
 				if key == "/values/fist" and value:
-					self.press("p")
+					self.press("r")
 
 				elif key == "/values/direction":
 					if value == 1:
