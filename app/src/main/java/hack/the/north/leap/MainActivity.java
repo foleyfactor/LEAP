@@ -55,6 +55,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private Size SPECTRUM_SIZE;
     private Scalar CONTOUR_COLOR, HULL_COLOR, HULL_WARN_COLOR;
 
+    private double mDeltaX = 0, mDeltaY = 0;
+
     private Point lastCenter;
     private boolean lastFist;
 
@@ -404,19 +406,22 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 double solidity = contourArea/hullArea;
 
                 if (lastCenter != null) {
-                    double deltaX = contourCenter.x - lastCenter.x;
-                    double deltaY = contourCenter.y - lastCenter.y;
-
-                    setDelta(-deltaX, deltaY);
+                    mDeltaX = contourCenter.x - lastCenter.x;
+                    mDeltaY = contourCenter.y - lastCenter.y;
+                    setDelta(mDeltaX, mDeltaY);
                 }
 
                 lastCenter = hullCenter;
 
-                if (solidity > 0.77f && !hullIsOnEdge) {
-                    drawFist(0);
+                if (solidity > 0.82f && !hullIsOnEdge) {
                     if (! lastFist) {
-                        setFist(true);
-                        lastFist = true;
+                        if (!isMovement()) {
+                            setFist(true);
+                            lastFist = true;
+                            drawFist(0);
+                        } else {
+                            drawFist(1);
+                        }
                     }
                 } else {
                     if (hullIsOnEdge) {
@@ -446,15 +451,16 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
             Mat colorLabel = mRgba.submat(4, 68, 4, 68);
             colorLabel.setTo(mBlobColorRgba);
-
-//            Mat spectrumLabel = mRgba.submat(4, 4 + mSpectrum.rows(), 70, 70 + mSpectrum.cols());
-//            mSpectrum.copyTo(spectrumLabel);
         }
 
 
         Core.flip(mRgba, mRgba, 1);
 
         return mRgba;
+    }
+
+    private boolean isMovement() {
+        return (Math.abs(mDeltaX) > 100 || Math.abs(mDeltaY) > 100);
     }
 
     private Point getCenterPoint(List<Point> points) {

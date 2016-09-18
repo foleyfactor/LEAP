@@ -64,6 +64,7 @@ class LEAPCommand:
 				print(key+":\t", value, end="\t")
 
 				if key == "/values/fist" and value:
+					self.command("")
 					self.lastCommand = "fist"
 
 				elif key == "/values/deltaX":
