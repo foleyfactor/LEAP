@@ -21,10 +21,15 @@ import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 import org.opencv.imgproc.Imgproc;
 
+import android.*;
+import android.Manifest;
 import android.app.Activity;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
@@ -52,6 +57,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
     private Point lastCenter;
     private boolean lastFist;
+
+    private final static int CAMERA_PERMISSION_REQUEST = 1337;
 
     private int width, height;
     private CameraBridgeViewBase mOpenCvCameraView;
@@ -192,6 +199,12 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         setContentView(R.layout.activity_main);
+
+        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.HelloOpenCvView);
+        mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
+        mOpenCvCameraView.setCvCameraViewListener(this);
+        mOpenCvCameraView.setCameraIndex(1);
+
         Display display = getWindowManager().getDefaultDisplay();
         android.graphics.Point size = new android.graphics.Point();
         display.getSize(size);
@@ -200,11 +213,42 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         lastFist = false;
 
-        mOpenCvCameraView = (CameraBridgeViewBase) findViewById(R.id.HelloOpenCvView);
-        mOpenCvCameraView.setVisibility(SurfaceView.VISIBLE);
-        mOpenCvCameraView.setCvCameraViewListener(this);
-        mOpenCvCameraView.setCameraIndex(1);
+        requestCameraPermission();
 
+    }
+
+    public void requestCameraPermission() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.READ_CONTACTS)) {
+
+            } else {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.CAMERA},
+                        CAMERA_PERMISSION_REQUEST);
+            }
+
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case CAMERA_PERMISSION_REQUEST: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                } else {
+
+                }
+                return;
+            }
+
+        }
     }
 
     @Override
@@ -350,14 +394,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
                 boolean hullIsOnEdge = edgeScan(hullPoints, 1912, 1072);
 
-                if (!hullIsOnEdge) {
-                    Imgproc.drawContours(mRgba, hulls, -1, HULL_COLOR, 5);
-                    Imgproc.circle(mRgba, hullCenter, 10, HULL_COLOR, -1);
-                } else {
-                    Imgproc.drawContours(mRgba, hulls, -1, HULL_WARN_COLOR, 7);
-                    Imgproc.circle(mRgba, hullCenter, 10, HULL_WARN_COLOR, -1);
-                }
-
                 Imgproc.drawContours(mRgba, contours, -1, CONTOUR_COLOR, 5);
                 Imgproc.circle(mRgba, contourCenter, 10, CONTOUR_COLOR, -1);
 
@@ -383,16 +419,30 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                         lastFist = true;
                     }
                 } else {
-                    drawFist(1);
+                    if (hullIsOnEdge) {
+                        drawFist(-1);
+                    } else {
+                        drawFist(1);
+                    }
                     if (lastFist) {
                         setFist(false);
                         lastFist = false;
                     }
                 }
+
+                if (!hullIsOnEdge) {
+                    Imgproc.drawContours(mRgba, hulls, -1, HULL_COLOR, 5);
+                    Imgproc.circle(mRgba, hullCenter, 10, HULL_COLOR, -1);
+                } else {
+                    Imgproc.drawContours(mRgba, hulls, -1, HULL_WARN_COLOR, 7);
+                    Imgproc.circle(mRgba, hullCenter, 10, HULL_WARN_COLOR, -1);
+                }
             } else {
-                drawDirection(4);
+                drawDirection(0);
                 drawFist(Integer.MAX_VALUE);
             }
+
+
 
             Mat colorLabel = mRgba.submat(4, 68, 4, 68);
             colorLabel.setTo(mBlobColorRgba);
