@@ -66,19 +66,19 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             final Drawable draw;
             switch (direction) {
                 case 0:
-                    draw = getDrawable(R.drawable.up_arrow);
+                    draw = null;
                     break;
                 case 1:
-                    draw = getDrawable(R.drawable.right_arrow);
+                    draw = getDrawable(R.drawable.up_arrow);
                     break;
                 case 2:
-                    draw = getDrawable(R.drawable.down_arrow);
+                    draw = getDrawable(R.drawable.right_arrow);
                     break;
                 case 3:
-                    draw = getDrawable(R.drawable.left_arrow);
+                    draw = getDrawable(R.drawable.down_arrow);
                     break;
                 case 4:
-                    draw = null;
+                    draw = getDrawable(R.drawable.left_arrow);
                     break;
                 default:
                     draw = null;
@@ -143,15 +143,15 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         int bottomYQuart = (3*height)/4;
 
         if (cX < rightXQuart){//right
-            drawDirection(1);
-        }else if (cX > leftXQuart){//left
-            drawDirection(3);
-        }else if (cY < topYQuart){//up
-            drawDirection(0);
-        }else if (cY > bottomYQuart){//down
             drawDirection(2);
-        }else{
+        }else if (cX > leftXQuart){//left
             drawDirection(4);
+        }else if (cY < topYQuart){//up
+            drawDirection(1);
+        }else if (cY > bottomYQuart){//down
+            drawDirection(3);
+        }else{
+            drawDirection(0);
         }
     }
 
@@ -411,7 +411,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         return new Point(cX, cY);
     }
+    public void setDirection(int d){
 
+    }
     public void setFist(boolean b) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("values/fist");
         ref.setValue(b);
