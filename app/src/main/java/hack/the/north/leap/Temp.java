@@ -2,10 +2,7 @@ package hack.the.north.leap;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Matrix;
-import android.graphics.SurfaceTexture;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -14,7 +11,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceView;
-import android.view.TextureView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -29,7 +25,6 @@ import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 import org.opencv.android.Utils;
-import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -37,7 +32,6 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Temp extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
@@ -49,7 +43,7 @@ public class Temp extends AppCompatActivity implements CameraBridgeViewBase.CvCa
     private Mat mRgba;
     private Scalar mBlobColorRgba;
     private Scalar mBlobColorHsv;
-    private ColorBlobDetector mDetector;
+    private HandDetection mDetector;
     private Mat mSpectrum;
     private Size SPECTRUM_SIZE;
     private Scalar CONTOUR_COLOR;
@@ -179,7 +173,7 @@ public class Temp extends AppCompatActivity implements CameraBridgeViewBase.CvCa
     @Override
     public void onCameraViewStarted(int width, int height) {
         mRgba = new Mat(height, width, CvType.CV_8UC4);
-        mDetector = new ColorBlobDetector();
+        mDetector = new HandDetection();
         mSpectrum = new Mat();
         mBlobColorRgba = new Scalar(255);
         mBlobColorHsv = new Scalar(255);

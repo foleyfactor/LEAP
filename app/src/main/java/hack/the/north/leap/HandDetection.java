@@ -17,7 +17,7 @@ import java.util.List;
  * Created by Alex on 2016-09-17.
  */
 
-public class ColorBlobDetector {
+public class HandDetection {
     private Scalar mLowerBound = new Scalar(0);
     private Scalar mUpperBound = new Scalar(0);
     private static double mMinContourArea = 2000;

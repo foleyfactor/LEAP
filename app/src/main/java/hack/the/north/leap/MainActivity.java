@@ -11,7 +11,6 @@ import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfInt;
-import org.opencv.core.MatOfInt4;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
 import org.opencv.core.Rect;
@@ -21,20 +20,17 @@ import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.CameraBridgeViewBase.CvCameraViewListener2;
 import org.opencv.imgproc.Imgproc;
 
-import android.*;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.view.View.OnTouchListener;
 import android.view.SurfaceView;
@@ -50,7 +46,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private Mat mRgba;
     private Scalar mBlobColorRgba;
     private Scalar mBlobColorHsv;
-    private ColorBlobDetector mDetector;
+    private HandDetection mDetector;
 //    private Mat mSpectrum;
     private Size SPECTRUM_SIZE;
     private Scalar CONTOUR_COLOR, HULL_COLOR, HULL_WARN_COLOR;
@@ -282,7 +278,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
     public void onCameraViewStarted(int width, int height) {
         mRgba = new Mat(height, width, CvType.CV_8UC4);
-        mDetector = new ColorBlobDetector();
+        mDetector = new HandDetection();
 //        mSpectrum = new Mat();
         mBlobColorRgba = new Scalar(255);
         mBlobColorHsv = new Scalar(255);
