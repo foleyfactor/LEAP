@@ -144,14 +144,19 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         if (cX < rightXQuart){//right
             drawDirection(2);
+            setDirection(2);
         }else if (cX > leftXQuart){//left
             drawDirection(4);
+            setDirection(4);
         }else if (cY < topYQuart){//up
             drawDirection(1);
+            setDirection(1);
         }else if (cY > bottomYQuart){//down
             drawDirection(3);
+            setDirection(3);
         }else{
             drawDirection(0);
+            setDirection(0);
         }
     }
 
@@ -412,7 +417,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
         return new Point(cX, cY);
     }
     public void setDirection(int d){
-
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("values/direction");
+        ref.setValue(d);
     }
     public void setFist(boolean b) {
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference("values/fist");
