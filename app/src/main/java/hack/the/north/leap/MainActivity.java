@@ -332,6 +332,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     hullPoints.add(contourPoints.get(i));
                 }
 
+                boolean hullIsOnEdge = edgeScan(hullPoints, 1912, 1072);
+
                 MatOfPoint hullMat = new MatOfPoint();
                 hullMat.fromList(hullPoints);
 
@@ -347,7 +349,10 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
                 Imgproc.drawContours(mRgba, hulls, -1, HULL_COLOR, 5);
                 Imgproc.circle(mRgba, hullCenter, 10, HULL_COLOR, -1);
+
                 double hullArea = Imgproc.contourArea(hullMat);
+                setHullArea(hullArea);
+
                 double contourArea = Imgproc.contourArea(largest);
                 double solidity = contourArea/hullArea;
 
@@ -360,7 +365,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
                 lastCenter = hullCenter;
 
-                if (solidity > 0.77f) {
+                if (solidity > 0.77f && !hullIsOnEdge) {
                     drawFist(0);
                     if (! lastFist) {
                         setFist(true);
@@ -418,6 +423,21 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         refx.setValue(x);
         refy.setValue(y);
+    }
+
+    public void setHullArea(double a) {
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("values/hullArea");
+        ref.setValue(a);
+    }
+
+    public boolean edgeScan(List<Point> points, int width, int height) {
+        for (Point p : points) {
+            Log.e(TAG, p.x + " " + p.y);
+            if (p.x <= 8 || p.x >= width-4 || p.y <= 8 || p.y >= height-4){
+                return true;
+            }
+        }
+        return false;
     }
 
     private Scalar converScalarHsv2Rgba(Scalar hsvColor) {
