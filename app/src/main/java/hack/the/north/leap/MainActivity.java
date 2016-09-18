@@ -46,9 +46,9 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     private Scalar mBlobColorRgba;
     private Scalar mBlobColorHsv;
     private ColorBlobDetector mDetector;
-    private Mat mSpectrum;
+//    private Mat mSpectrum;
     private Size SPECTRUM_SIZE;
-    private Scalar CONTOUR_COLOR, HULL_COLOR;
+    private Scalar CONTOUR_COLOR, HULL_COLOR, HULL_WARN_COLOR;
 
     private Point lastCenter;
     private boolean lastFist;
@@ -237,12 +237,13 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
     public void onCameraViewStarted(int width, int height) {
         mRgba = new Mat(height, width, CvType.CV_8UC4);
         mDetector = new ColorBlobDetector();
-        mSpectrum = new Mat();
+//        mSpectrum = new Mat();
         mBlobColorRgba = new Scalar(255);
         mBlobColorHsv = new Scalar(255);
-        SPECTRUM_SIZE = new Size(200, 64);
+//        SPECTRUM_SIZE = new Size(200, 64);
         CONTOUR_COLOR = new Scalar(255,0,0,255);
         HULL_COLOR = new Scalar(0,255,0,255);
+        HULL_WARN_COLOR = new Scalar(255,168,0,255);
     }
 
     public void onCameraViewStopped() {
@@ -289,7 +290,7 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
 
         mDetector.setHsvColor(mBlobColorHsv);
 
-        Imgproc.resize(mDetector.getSpectrum(), mSpectrum, SPECTRUM_SIZE);
+        //Imgproc.resize(mDetector.getSpectrum(), mSpectrum, SPECTRUM_SIZE);
 
         mIsColorSelected = true;
 
@@ -337,8 +338,6 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                     hullPoints.add(contourPoints.get(i));
                 }
 
-                boolean hullIsOnEdge = edgeScan(hullPoints, 1912, 1072);
-
                 MatOfPoint hullMat = new MatOfPoint();
                 hullMat.fromList(hullPoints);
 
@@ -349,11 +348,18 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
                 Point contourCenter = getCenterPoint(contourPoints);
                 checkHandDirection(contourCenter);
 
+                boolean hullIsOnEdge = edgeScan(hullPoints, 1912, 1072);
+
+                if (!hullIsOnEdge) {
+                    Imgproc.drawContours(mRgba, hulls, -1, HULL_COLOR, 5);
+                    Imgproc.circle(mRgba, hullCenter, 10, HULL_COLOR, -1);
+                } else {
+                    Imgproc.drawContours(mRgba, hulls, -1, HULL_WARN_COLOR, 7);
+                    Imgproc.circle(mRgba, hullCenter, 10, HULL_WARN_COLOR, -1);
+                }
+
                 Imgproc.drawContours(mRgba, contours, -1, CONTOUR_COLOR, 5);
                 Imgproc.circle(mRgba, contourCenter, 10, CONTOUR_COLOR, -1);
-
-                Imgproc.drawContours(mRgba, hulls, -1, HULL_COLOR, 5);
-                Imgproc.circle(mRgba, hullCenter, 10, HULL_COLOR, -1);
 
                 double hullArea = Imgproc.contourArea(hullMat);
                 setHullArea(hullArea);
@@ -391,8 +397,8 @@ public class MainActivity extends Activity implements OnTouchListener, CvCameraV
             Mat colorLabel = mRgba.submat(4, 68, 4, 68);
             colorLabel.setTo(mBlobColorRgba);
 
-            Mat spectrumLabel = mRgba.submat(4, 4 + mSpectrum.rows(), 70, 70 + mSpectrum.cols());
-            mSpectrum.copyTo(spectrumLabel);
+//            Mat spectrumLabel = mRgba.submat(4, 4 + mSpectrum.rows(), 70, 70 + mSpectrum.cols());
+//            mSpectrum.copyTo(spectrumLabel);
         }
 
 
