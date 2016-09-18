@@ -5,7 +5,7 @@ import pyautogui
 import time
 from math import sqrt, pi
 
-DELTA_THRESHOLD_COEFF = 2
+DELTA_THRESHOLD_COEFF = 1.7
 DELTA_THRESHOLD_Y_INT = 62.3
 DOUBLE_COMMAND_TIME = 1.0 # in seconds
 COMMAND_TIME = 0.5 # in seconds

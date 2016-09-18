@@ -44,12 +44,18 @@ class LEAPCommand:
 		value = post["data"]
 
 		if event == "put":
+			if self.lastCommand == "fist" and \
+				key == "/values/fist" and value and \
+				(time.time() - self.lastCommandTime) < DOUBLE_COMMAND_TIME:
+					self.press("r")
+
 			if (time.time() - self.lastCommandTime) > COMMAND_TIME: #TODO: Check for double commands
 				if key == "/":
 					print("INFO: Initial data:", value)
 
 				if key == "/values/fist" and value:
-					self.press("r")
+					self.press("")
+					self.lastCommand = "fist"
 
 				elif key == "/values/direction":
 					if value == 1:
