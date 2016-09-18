@@ -4,6 +4,7 @@ import time
 from math import sqrt, pi
 
 PERCENTAGE_FOR_MOVEMENT = 0.7 #percentage of radius of the hull that needs to be moved for a "swipe" to be registered
+DOUBLE_COMMAND_TIME = 1.0 # in seconds
 COMMAND_TIME = 0.5 # in seconds
 
 class LEAPCommand:
@@ -23,15 +24,16 @@ class LEAPCommand:
 		self.lastCommandTime = 0
 		self.swipingX = False
 		self.swipingY = False
-		self.DELTA_THRESHOLD = 200
+		self.DELTA_THRESHOLD = 500
 
 	def start(self):
 		self.stream = self.db.stream(self.streamHandler)
 
 	def command(self, cmd):
-		self.lastCommandTime = time.time()
 		pyautogui.hotkey(*cmd.split("-"))
 		print(cmd)
+		self.lastCommand = cmd
+		self.lastCommandTime = time.time()
 
 	def updateDelta(self, hull):
 		#assume that for our case, the hull could be approximated
@@ -47,8 +49,8 @@ class LEAPCommand:
 		value = post["data"]
 
 		if event == "put":
-			if (time.time() - self.lastCommandTime) < COMMAND_TIME: #TODO: Check for double commands
-				print("---TOO SHORT---")
+			if (time.time() - self.lastCommandTime) < COMMAND_TIME:
+				if 				
 
 			else:
 				print(self.lastCommandTime, time.time())
